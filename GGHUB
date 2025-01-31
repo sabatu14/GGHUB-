@@ -1,39 +1,62 @@
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
+local function Callback(answer)
+    if answer == "Open" then
+        -- "Ok" butonuna basıldığında belirtilen linki yükle
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RobloxScripts490/GGHUB/refs/heads/main/GGHUB"))()
+    elseif answer == "Cancel" then
+        -- "Cancel" butonuna basıldığında "a" yazdır
+        print("Canceled.")
+    end
+end
+
+-- Desteklenen executor listesi
 local executors = {
     "Solara",
     "Wave",
     "NX",
     "Swift",
-	"Delta",
-	"JJSploit",
-	"Codex",
-	"Xeno"
+    "Delta",
+    "JJSploit",
+    "Codex",
+    "Xeno"
 }
 
+-- Check fonksiyonu, belirli bir executor var mı kontrol eder
 local function check(arg)
+    local isSupported = false
+    -- Executor'ı kontrol et
     for _, executor in ipairs(executors) do
         if arg == executor then
-             game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = arg .. " Is Supported!",
-                Text = "GGHUB Is Opening Pls Wait...",
-                Icon = "rbxthumb://type=Asset&id=109514426821441&w=150&h=150",
-				Button1 = "Ok",  -- İkon ID'si ekleyebilirsiniz (opsiyonel)
-                Duration = 5 -- Bildirimin görünme süresi (saniye cinsinden)
-            })
-            wait(5)
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/RobloxScripts490/GGHUB/refs/heads/main/GGHUB"))()
-            return
+            isSupported = true
+            break
         end
     end
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = arg .. " Not Supported",
-        Text = "You Can't Open GGHUB :(",
-        Icon = "rbxthumb://type=Asset&id=109514426821441&w=150&h=150",
-		Button1 = "Ok", -- İkon ID'si ekleyebilirsiniz (opsiyonel)
-        Duration = 3 -- Bildirimin görünme süresi (saniye cinsinden)
-    })
+    
+    -- Desteklenen executor varsa butonları ile bildirim gönder
+    if isSupported then
+        local Bindable = Instance.new("BindableFunction")
+        Bindable.OnInvoke = Callback  -- Callback fonksiyonunu bağla
+
+        -- Bildirim göster
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = arg .. " Is Supported!",
+            Text = "Press Open To Open GGHUB!",
+            Button1 = "Open",      -- Button1 metni
+            Button2 = "Cancel",  -- Button2 metni
+            Icon = "rbxthumb://type=Asset&id=109514426821441&w=150&h=150",  -- İkon
+            Duration = 5,  -- Bildirim süresi (saniye)
+            Callback = Bindable  -- Callback fonksiyonunu tetikle
+        })
+    else
+        -- Desteklenmeyen executor için sadece bilgi mesajı gönder
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = arg .. " Not Supported",
+            Text = "You Can't Open GGHUB :(",
+            Icon = "rbxthumb://type=Asset&id=109514426821441&w=150&h=150",
+            Button1 = "Ok", -- Button1 yalnızca "Ok" olacak
+            Duration = 3 -- Bildirimin görünme süresi (saniye cinsinden)
+        })
+    end
 end
 
-check(identifyexecutor())
+-- Örnek: Check fonksiyonunu belirli bir executor ile test et
+check(identifyexecutor())  -- identifyexecutor() fonksiyonu, çalıştıran executor'ı tespit etmek için kullanılır
